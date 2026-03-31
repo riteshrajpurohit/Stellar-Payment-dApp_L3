@@ -1,13 +1,13 @@
 # Stellar Web3 Command Center (Level 3 dApp)
 
-A high-fidelity, production-ready decentralized application built on the Stellar network. This project elevates the traditional web3 development experience by introducing robust Soroban smart contract integration, multi-wallet connectivity, advanced caching layers, and a highly polished dark-mode dashboard interface.
+A high-fidelity, production-ready decentralized application built on the Stellar network. This project elevates the traditional web3 development experience by introducing robust Soroban smart contract integration, multi-wallet connectivity, advanced caching layers (SWR), and a meticulously polished dark-mode dashboard interface.
 
 ---
 
 ## 🚀 Live Links & Submission Deliverables
 
 - **Live Demo Link:** https://stellar-payment-d-app-l3.vercel.app/
-- **1-Minute Demo Video:** [https://youtu.be/demo-video-placeholder](https://youtu.be/demo-video-placeholder) (Dummy Link)
+- **1-Minute Demo Video:** https://drive.google.com/file/d/1pG4URfGs_B-4LG5flvT3YM8fGCLlKa3m/view?usp=sharing
 - **GitHub Repository:** [https://github.com/riteshrajpurohit/Stellar-Payment-dApp_L3](https://github.com/riteshrajpurohit/Stellar-Payment-dApp_L3)
 
 ## ✅ Submission Checklist Highlights
@@ -24,31 +24,70 @@ A high-fidelity, production-ready decentralized application built on the Stellar
 
 <img width="1470" height="956" alt="Screenshot 2026-04-01 at 12 08 29 AM" src="https://github.com/user-attachments/assets/86fd7412-3858-4e08-848b-22b802d666be" />
 
+---
+
+## 🏗️ Project Architecture & File Structure
+
+This repository follows a clean, highly modular React architecture optimized for separation of concerns between UI layers, Blockchain logic, and State caching.
+
+```text
+📦 stellar-payment-dapp
+ ┣ 📂 src
+ ┃ ┣ 📂 app
+ ┃ ┃ ┣ 📜 globals.css       # Core Tailwind & Glassmorphism design tokens
+ ┃ ┃ ┣ 📜 layout.tsx        # Next.js Root Layout wrapper
+ ┃ ┃ ┗ 📜 page.tsx          # Main Dashboard entry point
+ ┃ ┣ 📂 components
+ ┃ ┃ ┣ 📂 app               # Business-Specific UI (WalletPanel, TransactionForm, etc.)
+ ┃ ┃ ┗ 📂 ui                # Reusable Generic UI (Skeleton, Spinner, Dialog)
+ ┃ ┣ 📂 hooks
+ ┃ ┃ ┗ 📜 use-stellar-wallet.ts # Primary custom hook aggregating network & logic states
+ ┃ ┣ 📂 lib
+ ┃ ┃ ┣ 📂 cache             # SWR caching implementations (useCachedBalance, useCachedContract)
+ ┃ ┃ ┣ 📂 contract          # Soroban RPC client initialization module
+ ┃ ┃ ┣ 📂 validation        # Pure deterministic transaction validation functions
+ ┃ ┃ ┗ 📂 wallet            # Zustand global state (useWalletStore)
+ ┃ ┣ 📂 types               # Global TypeScript definitions (ActivityItem, TransactionResult)
+ ┃ ┗ 📂 utils               # Utility helpers (address shorteners, formatters)
+ ┣ 📂 tests                 # Vitest testing suite (Component & Logic Tests)
+ ┣ 📜 vitest.config.ts      # Testing configurations linking to JS-DOM
+ ┗ 📜 package.json
+```
 
 ---
 
-## ✨ System Features
+## 🧠 Tech Stack Deep Dive
 
-- **Premium UI/UX System:** A true "Command Center" dashboard leveraging deep dark-mode aesthetics, responsive glass cards, gradient borders, and micro-interactions.
-- **Robust Multi-Wallet Support:** Built-in connection lifecycle handling for **Freighter** and **Albedo** extensions utilizing `@creit.tech/stellar-wallets-kit`.
-- **Intelligent Caching (SWR):** Lightweight reads! Balances and smart-contract states are cached and automatically revalidated, severely reducing unnecessary network spam while presenting clean "Live Sync" badges.
-- **Soroban Interactions:** Natively Read and Write capabilities linked to a live Soroban counter contract on the Stellar Testnet. 
-- **Deterministic Loading States:** Every asynchronous user action drives explicit UI states (Skeletons and Spinners). Graceful RPC error parsing catches failures before returning them via human-friendly Toast notifications.
+### 1. Frontend Core (Next.js 14 & React 18)
+Built entirely on **Next.js App Router** for optimal performance. The architecture utilizes `"use client"` directives heavily as this is primarily a client-side Web3 SPA relying on wallet browser extensions.
+
+### 2. State Management (Zustand)
+Used `@/lib/wallet/useWallet.ts` as a minimal, lightweight global store controlling the `WalletConnection` lifecycle. It securely holds the connected user's public address without trapping it inside local component lifecycles, enabling Multi-Wallet connectivity via `@creit.tech/stellar-wallets-kit`.
+
+### 3. Remote Data Caching (SWR)
+To prevent network spam and RPC rate-limiting on the Stellar Testnet, data fetching is abstracted into `swr` layers. 
+- Example: the user's XLM `balance` and the `Soroban Counter state` refresh intelligently based on focus and intervals, bypassing manual reload requirements.
+
+### 4. Smart Contract Integration (Soroban RPC)
+Direct read/write access to the Stellar Testnet via `@stellar/stellar-sdk`. 
+Smart contracts use the underlying RPC node `https://soroban-testnet.stellar.org` to asynchronously increment and retrieve on-chain state blocks.
+
+### 5. Deterministic Testing (Vitest & React Testing Library)
+A rigorous `.test.ts` suite mapped via `environment: "jsdom"`. It explicitly verifies input sanitizations, fee calculations, and correctly catches React component mount states based on transaction results.
 
 ---
 
-## 🛠️ Tech Stack & Architecture
+## 🎨 UI / UX Aesthetics
 
-- **Core Framework:** Next.js 14 App Router (React 18)
-- **State & Caching:** Zustand (Global Wallet Store) + SWR (Reactive Data Fetching)
-- **Styling:** Tailwind CSS + custom glassmorphism utilities, Lucide React Icons.
-- **Blockchain Connectivity SDKs:** `@stellar/stellar-sdk` & `@creit.tech/stellar-wallets-kit`
-- **Testing Engine:** `Vitest` integrated with `React Testing Library` & `JSDOM`
+This project deliberately avoids generic UI themes, instead leveraging a tailored **"Command Center"** experience optimized for high-end web3 users.
 
-### Smart Contract Target Details
-**Network:** TESTNET  
-**RPC Server:** `https://soroban-testnet.stellar.org`  
-**Explorer Reference:** `https://testnet.stellarexpert.com/nordic`
+- **Glassmorphism Design:** Utilizes `backdrop-blur-xl`, semi-transparent whites (`bg-white/5`), and thin contrast borders (`border-white/10`) to create floating UI panels above the dark gradient.
+- **Aurora Color Spaces:** Highlights and indicators rely on deep OKLCH-based colors (Cyan, Emerald, Fuchsia) mapped via `lucide-react` icons.
+- **Micro-Interactions:** 
+  - Buttons transition smoothly on hover.
+  - Form validation is completely reactive.
+  - Pending transactions render custom `Spinner` SVG components preventing UI blocking.
+  - Pre-fetch rendering dynamically pulls geometric bounds using animated `Skeleton` frames to prevent jarring DOM layout shifts.
 
 ---
 
@@ -93,5 +132,3 @@ npm run test
 ```bash
 npm run test:watch
 ```
-
----
