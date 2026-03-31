@@ -1,5 +1,4 @@
 import { Wallet2, RefreshCw, Power } from "lucide-react";
-import { formatStellarAddress } from "@/utils/format";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Spinner } from "@/components/ui/spinner";
 import { CachedStateBadge } from "./cached-state-badge";
