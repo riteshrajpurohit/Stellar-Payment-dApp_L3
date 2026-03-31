@@ -37,10 +37,7 @@ A high-fidelity, production-ready decentralized application built on the Stellar
 
 <img width="1470" height="956" alt="Screenshot 2026-04-01 at 1 05 33 AM" src="https://github.com/user-attachments/assets/c90fe6dd-1ef4-40ca-9d8e-8ce80ea6c56f" />
 
-**3. Smart Contract Interaction**
-![Contract Interaction Loading](#)
-
-**4. Send Transaction (Pending & Verified)**
+**3. Send Transaction (Pending & Verified)**
 
 <img width="1470" height="956" alt="Screenshot 2026-04-01 at 1 07 08 AM" src="https://github.com/user-attachments/assets/33a17d50-bd2a-4e0d-aa8d-0950f298d6a2" />
 
