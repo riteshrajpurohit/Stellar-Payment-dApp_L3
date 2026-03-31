@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { ArrowDownToLine, ShieldCheck, ExternalLink } from "lucide-react";
+import { useState } from "react";
+import { ShieldCheck } from "lucide-react";
 
 import { ActivityCard } from "@/components/app/activity-card";
 import { AppHeader } from "@/components/app/app-header";
@@ -12,6 +12,7 @@ import { WalletPanel } from "@/components/app/wallet-panel";
 import { ContractPanel } from "@/components/app/contract-panel";
 import { useWalletStore } from "@/lib/wallet/useWallet";
 import { useStellarWallet } from "@/hooks/use-stellar-wallet";
+import { useCachedContract } from "@/lib/cache/use-cached-contract";
 
 export default function Home() {
   const {
@@ -21,11 +22,11 @@ export default function Home() {
     disconnect,
   } = useWalletStore();
 
-  // Use legacy hook just for transaction building if they want it
-  const legacyWallet = useStellarWallet();
+  const wallet = useStellarWallet();
+  const contract = useCachedContract(walletAddress || "");
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen pb-20">
       <AppHeader
         isConnected={isConnected}
         walletAddress={walletAddress || ""}
@@ -34,64 +35,72 @@ export default function Home() {
         onDisconnect={disconnect}
       />
 
-      <main className="mx-auto w-full max-w-6xl space-y-8 px-4 py-10 md:px-8 md:py-14">
-        <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-black/20 p-7 shadow-[0_25px_80px_rgba(2,6,23,0.45)] backdrop-blur-2xl md:p-10">
-          <div className="pointer-events-none absolute -right-20 -top-20 size-56 rounded-full bg-cyan-400/15 blur-3xl" />
-          <div className="pointer-events-none absolute -left-20 bottom-0 size-48 rounded-full bg-blue-500/15 blur-3xl" />
-
+      <main className="mx-auto w-full max-w-7xl space-y-8 px-4 pt-28 md:px-8">
+        <section className="glass-card p-7 md:p-10 mb-10">
           <div className="relative z-10 max-w-3xl space-y-5">
-            <div className="inline-flex items-center gap-2 rounded-full border border-cyan-300/35 bg-cyan-400/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.2em] text-cyan-100">
+            <div className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.2em] text-cyan-300 backdrop-blur-sm">
               <ShieldCheck className="size-4" />
-              Stellar Testnet Live
+              Stellar Operations Console
             </div>
 
-            <h1 className="text-3xl font-semibold leading-tight text-white md:text-5xl">
-              Stellar Web3 Level 2 dApp
+            <h1 className="text-4xl font-semibold leading-tight text-white md:text-5xl">
+              Live Web3 Command Center
             </h1>
 
-            <p className="max-w-2xl text-sm leading-relaxed text-slate-300 md:text-base">
+            <p className="max-w-2xl text-sm leading-relaxed text-slate-400 md:text-base">
               A production-ready environment featuring Multi-Wallet support
-              (Freighter & Albedo), Soroban Smart Contracts, real-time events,
-              and robust transaction tracking.
+              (Freighter & Albedo), Soroban Smart Contracts, cache invalidation,
+              and real-time event tracking.
             </p>
           </div>
         </section>
 
-        <section className="grid gap-6 lg:grid-cols-2">
-          {/* Smart Contract Panel */}
-          <ContractPanel />
-
-          <WalletPanel
-            isConnected={isConnected}
-            address={walletAddress || ""}
-            balance={legacyWallet.balance}
-            isBalanceLoading={legacyWallet.isBalanceLoading}
-            balanceError={legacyWallet.balanceError}
-            onRefreshBalance={() =>
-              walletAddress && legacyWallet.refreshBalance(walletAddress)
-            }
-            onDisconnect={disconnect}
-          />
-        </section>
-
-        <section className="grid gap-6 lg:grid-cols-2">
-          <div className="space-y-6">
-            <TransactionForm
-              disabled={!isConnected}
-              isSubmitting={legacyWallet.txStatus === "pending"}
-              onSubmit={legacyWallet.sendPayment}
+        <div className="grid gap-6 lg:grid-cols-12">
+          {/* Left Column: Wallet Status */}
+          <div className="space-y-6 lg:col-span-5">
+            <WalletPanel
+              isConnected={isConnected}
+              address={walletAddress || ""}
+              balance={wallet.balance}
+              isBalanceLoading={wallet.isBalanceLoading}
+              balanceError={wallet.balanceError}
+              onRefreshBalance={wallet.refreshBalance}
+              onDisconnect={disconnect}
             />
-            <TxResultCard
-              status={legacyWallet.txStatus}
-              error={legacyWallet.txError}
-              result={legacyWallet.lastTx}
+            
+            <ContractPanel 
+              isConnected={isConnected} 
+              counterValue={contract.counterValue}
+              isLoading={contract.isContractLoading}
+              isValidating={contract.isContractValidating}
+              error={contract.contractError}
+              walletAddress={walletAddress}
+              onRefresh={contract.refreshContract}
             />
           </div>
-          <div className="space-y-6">
-            <ActivityCard items={legacyWallet.activity} />
+
+          {/* Right Column: Transactions & Activity */}
+          <div className="space-y-6 lg:col-span-7">
+            <div className="glass-card p-6">
+              <TransactionForm
+                disabled={!isConnected}
+                isSubmitting={wallet.txStatus === "pending"}
+                onSubmit={wallet.sendPayment}
+              />
+            </div>
+            
+            {wallet.lastTx && (
+              <TxResultCard
+                status={wallet.txStatus}
+                error={wallet.txError}
+                result={wallet.lastTx}
+              />
+            )}
+            
+            <ActivityCard items={wallet.activity} />
             <FaucetHint />
           </div>
-        </section>
+        </div>
       </main>
     </div>
   );

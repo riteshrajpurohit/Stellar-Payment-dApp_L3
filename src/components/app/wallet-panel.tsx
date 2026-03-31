@@ -1,10 +1,8 @@
-import { AlertTriangle, CheckCircle2, Copy, PlugZap } from "lucide-react";
-
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BalanceCard } from "@/components/app/balance-card";
-import { shortenAddress } from "@/utils/format";
+import { Wallet2, RefreshCw, Power } from "lucide-react";
+import { formatStellarAddress } from "@/utils/format";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Spinner } from "@/components/ui/spinner";
+import { CachedStateBadge } from "./cached-state-badge";
 
 interface WalletPanelProps {
   isConnected: boolean;
@@ -16,7 +14,7 @@ interface WalletPanelProps {
   onDisconnect: () => void;
 }
 
-export const WalletPanel = ({
+export function WalletPanel({
   isConnected,
   address,
   balance,
@@ -24,78 +22,64 @@ export const WalletPanel = ({
   balanceError,
   onRefreshBalance,
   onDisconnect,
-}: WalletPanelProps) => {
-  const copyAddress = async () => {
-    if (!address) return;
-    await navigator.clipboard.writeText(address);
-  };
-
+}: WalletPanelProps) {
   return (
-    <Card className="border-white/10 bg-white/5 shadow-[0_20px_60px_rgba(2,6,23,0.45)] backdrop-blur-xl">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0">
-        <CardTitle className="text-xl text-white">Wallet Panel</CardTitle>
-        <Badge
-          className={
-            isConnected
-              ? "border-emerald-400/30 bg-emerald-500/10 text-emerald-100"
-              : "border-slate-500/40 bg-slate-600/20 text-slate-200"
-          }
-        >
-          {isConnected ? "Connected" : "Not Connected"}
-        </Badge>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {isConnected ? (
-          <>
-            <div className="rounded-lg border border-white/10 bg-black/20 p-4">
-              <div className="mb-1 flex items-center gap-2 text-slate-300">
-                <CheckCircle2 className="size-4 text-emerald-300" />
-                Active public key
-              </div>
-              <div className="flex items-center justify-between gap-3">
-                <p className="font-mono text-sm text-white">
-                  {shortenAddress(address, 10, 8)}
-                </p>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={copyAddress}
-                  className="h-8 px-2 text-slate-300 hover:bg-white/10 hover:text-white"
-                >
-                  <Copy className="mr-1 size-4" />
-                  Copy
-                </Button>
-              </div>
-            </div>
+    <div className="glass-card p-6">
+      <div className="mb-6 flex items-center justify-between">
+        <h2 className="flex items-center gap-2 text-lg font-medium text-white">
+          <Wallet2 className="text-blue-400" /> Wallet Connection
+        </h2>
+        {isConnected && <CachedStateBadge isLoading={isBalanceLoading} isValidating={isBalanceLoading} />}
+      </div>
 
-            <BalanceCard
-              balance={balance}
-              isLoading={isBalanceLoading}
-              error={balanceError}
-              onRefresh={onRefreshBalance}
-            />
-
-            <Button
-              variant="outline"
-              onClick={onDisconnect}
-              className="w-full border-white/20 bg-white/5 text-white hover:bg-white/10"
-            >
-              <PlugZap className="mr-2 size-4" />
-              Disconnect Wallet
-            </Button>
-          </>
-        ) : (
-          <div className="rounded-lg border border-dashed border-white/15 bg-black/20 p-4 text-slate-300">
-            <div className="mb-2 flex items-center gap-2 text-slate-200">
-              <AlertTriangle className="size-4 text-amber-300" />
-              Wallet not connected
-            </div>
-            <p className="text-sm">
-              Connect Freighter to view your Testnet balance and send payments.
-            </p>
+      {!isConnected ? (
+        <div className="rounded-xl border border-white/5 bg-white/5 p-8 text-center">
+          <p className="text-sm text-slate-400">
+            Connect your Freighter or Albedo wallet to view your balance and interact
+            with the network.
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-6">
+          <div className="rounded-xl border border-white/10 bg-black/50 p-5">
+             <div className="mb-2 text-xs font-medium text-slate-400 uppercase tracking-wider">Connected Address</div>
+             <div className="font-mono text-sm text-blue-300 break-all bg-blue-500/10 p-2 rounded border border-blue-500/20">
+               {address}
+             </div>
           </div>
-        )}
-      </CardContent>
-    </Card>
+
+          <div className="rounded-xl border border-white/10 bg-black/50 p-5">
+             <div className="mb-2 flex items-center justify-between text-xs font-medium text-slate-400 uppercase tracking-wider">
+               <span>Spendable Native Balance</span>
+               <button 
+                onClick={onRefreshBalance} 
+                disabled={isBalanceLoading}
+                className="hover:text-white transition-colors disabled:opacity-50"
+               >
+                 <RefreshCw size={14} className={isBalanceLoading ? "animate-spin" : ""} />
+               </button>
+             </div>
+             <div className="text-3xl font-light text-white">
+               {isBalanceLoading && !balance ? (
+                 <Skeleton className="h-10 w-32" />
+               ) : balanceError ? (
+                 <span className="text-red-400 text-base">{balanceError}</span>
+               ) : (
+                 <div className="flex items-baseline gap-2">
+                   {balance} <span className="text-lg text-slate-500 font-medium">XLM</span>
+                 </div>
+               )}
+             </div>
+          </div>
+
+          <button
+            onClick={onDisconnect}
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-red-500/10 border border-red-500/20 py-3 text-sm font-medium text-red-400 hover:bg-red-500/20 transition-all"
+          >
+            <Power size={16} /> Disconnect Wallet
+          </button>
+        </div>
+      )}
+    </div>
   );
-};
+}

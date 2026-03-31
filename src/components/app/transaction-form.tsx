@@ -1,132 +1,109 @@
 "use client";
 
-import { Loader2, Send } from "lucide-react";
-import { useMemo, useState } from "react";
-
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { validateTransactionInput } from "@/utils/validation";
+import { useState } from "react";
+import { Send, ArrowRight } from "lucide-react";
+import { Spinner } from "@/components/ui/spinner";
 
 interface TransactionFormProps {
   disabled: boolean;
-  onSubmit: (payload: {
+  isSubmitting: boolean;
+  onSubmit: (data: {
     recipient: string;
     amount: string;
     memo?: string;
-  }) => Promise<void>;
-  isSubmitting: boolean;
+  }) => void;
 }
 
-export const TransactionForm = ({
+export function TransactionForm({
   disabled,
-  onSubmit,
   isSubmitting,
-}: TransactionFormProps) => {
+  onSubmit,
+}: TransactionFormProps) {
   const [recipient, setRecipient] = useState("");
   const [amount, setAmount] = useState("");
   const [memo, setMemo] = useState("");
 
-  const validationMessage = useMemo(
-    () => validateTransactionInput({ recipient, amount, memo }),
-    [amount, memo, recipient],
-  );
-
-  const canSubmit = !disabled && !isSubmitting && !validationMessage;
-
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (!canSubmit) return;
-
-    await onSubmit({
-      recipient: recipient.trim(),
-      amount: amount.trim(),
-      memo: memo.trim() || undefined,
-    });
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit({ recipient, amount, memo });
   };
 
   return (
-    <Card
-      id="send"
-      className="border-white/10 bg-white/5 shadow-[0_20px_60px_rgba(2,6,23,0.45)] backdrop-blur-xl"
-    >
-      <CardHeader>
-        <CardTitle className="text-xl text-white">Send XLM Payment</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="recipient" className="text-slate-200">
-              Recipient Address
-            </Label>
-            <Input
-              id="recipient"
-              value={recipient}
-              onChange={(event) => setRecipient(event.target.value)}
+    <form onSubmit={handleSubmit} className="flex flex-col h-full justify-between">
+      <div>
+        <div className="mb-6 flex items-center justify-between">
+          <h2 className="flex items-center gap-2 text-lg font-medium text-white">
+            <Send className="text-emerald-400" /> Send Payment
+          </h2>
+        </div>
+
+        <div className="space-y-4">
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+              Recipient Address (Public Key)
+            </label>
+            <input
+              type="text"
               placeholder="G..."
-              className="border-white/20 bg-black/30 text-white placeholder:text-slate-500"
               disabled={disabled || isSubmitting}
+              className="w-full rounded-xl border border-white/10 bg-black/50 px-4 py-3 text-sm text-white placeholder-slate-600 focus:border-emerald-500/50 focus:outline-none focus:ring-1 focus:ring-emerald-500/50 disabled:opacity-50 transition-all font-mono"
+              value={recipient}
+              onChange={(e) => setRecipient(e.target.value)}
+              required
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="amount" className="text-slate-200">
-              Amount (XLM)
-            </Label>
-            <Input
-              id="amount"
-              value={amount}
-              onChange={(event) => setAmount(event.target.value)}
-              inputMode="decimal"
-              placeholder="10"
-              className="border-white/20 bg-black/30 text-white placeholder:text-slate-500"
-              disabled={disabled || isSubmitting}
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                Amount (XLM)
+              </label>
+              <input
+                type="number"
+                step="0.0000001"
+                min="0"
+                placeholder="0.00"
+                disabled={disabled || isSubmitting}
+                className="w-full rounded-xl border border-white/10 bg-black/50 px-4 py-3 text-sm text-white placeholder-slate-600 focus:border-emerald-500/50 focus:outline-none focus:ring-1 focus:ring-emerald-500/50 disabled:opacity-50 transition-all font-mono"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                required
+              />
+            </div>
+            
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                Memo (Optional)
+              </label>
+              <input
+                type="text"
+                maxLength={28}
+                placeholder="Text memo"
+                disabled={disabled || isSubmitting}
+                className="w-full rounded-xl border border-white/10 bg-black/50 px-4 py-3 text-sm text-white placeholder-slate-600 focus:border-emerald-500/50 focus:outline-none focus:ring-1 focus:ring-emerald-500/50 disabled:opacity-50 transition-all"
+                value={memo}
+                onChange={(e) => setMemo(e.target.value)}
+              />
+            </div>
           </div>
+        </div>
+      </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="memo" className="text-slate-200">
-              Memo (optional)
-            </Label>
-            <Textarea
-              id="memo"
-              value={memo}
-              onChange={(event) => setMemo(event.target.value)}
-              placeholder="Payment for QA test"
-              maxLength={28}
-              className="min-h-20 border-white/20 bg-black/30 text-white placeholder:text-slate-500"
-              disabled={disabled || isSubmitting}
-            />
-            <p className="text-xs text-slate-400">
-              Text memo max length: 28 characters.
-            </p>
-          </div>
-
-          {validationMessage ? (
-            <p className="text-sm text-amber-200">{validationMessage}</p>
-          ) : null}
-
-          <Button
-            type="submit"
-            disabled={!canSubmit}
-            className="w-full bg-cyan-300 text-slate-950 hover:bg-cyan-200 disabled:bg-cyan-300/50"
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="mr-2 size-4 animate-spin" />
-                Submitting transaction...
-              </>
-            ) : (
-              <>
-                <Send className="mr-2 size-4" />
-                Send XLM
-              </>
-            )}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+      <button
+        type="submit"
+        disabled={disabled || isSubmitting || !recipient || !amount}
+        className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 border border-emerald-400 py-3.5 text-sm font-bold text-white shadow-lg shadow-emerald-500/20 disabled:opacity-50 disabled:hover:bg-emerald-500 transition-all"
+      >
+        {isSubmitting ? (
+          <>
+            <Spinner className="text-white" /> Sending...
+          </>
+        ) : (
+          <>
+            Confirm Transaction <ArrowRight size={18} />
+          </>
+        )}
+      </button>
+    </form>
   );
-};
+}

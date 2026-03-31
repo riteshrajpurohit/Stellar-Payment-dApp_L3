@@ -1,110 +1,93 @@
-# Stellar Payment dApp - Level 2
+# Stellar Web3 Command Center (Level 3 dApp)
 
-**Live Demo:** [https://stellar-payment-dapp-level2-demo.vercel.app](https://stellar-payment-dapp-level2-demo.vercel.app) _(Placeholder)_
+A high-fidelity, production-ready decentralized application built on the Stellar network. This project features multi-wallet connectivity, robust Soroban smart contract integration, a native XLM payments UI, caching mechanisms via SWR, rigorous automated testing, and a premium "glassmorphism" dark-mode aesthetic.
 
-## Project Description
+## Features
 
-A production-ready Web3 decentralized application (dApp) built on the Stellar network using Next.js. This Level 2 upgrade introduces multi-wallet support, Soroban smart contract integration, and real-time state synchronization on the Stellar Testnet.
+- **Premium UI/UX:** A true "Command Center" dashboard leveraging deep dark-mode aesthetics, responsive glass cards, gradient borders, and micro-interactions.
+- **Robust Wallet Support:** Built-in connection lifecycle for Freighter and Albedo via `@creit.tech/stellar-wallets-kit`.
+- **Intelligent Caching:** Lightweight reads! Balances and smart-contract state are cached and automatically revalidated via `SWR`, reducing unnecessary network spam while presenting clean "live sync" states.
+- **Soroban Interactions:** Read and Write capabilities to a live Soroban counter contract on the Stellar Testnet. 
+- **Polished Transaction States:** Every async user action generates deterministic loading states (skeletons and spinners), with graceful RPC error parsing returned as friendly Toast notifications.
 
-## Quick Links
+---
 
-- **Stellar Testnet Explorer:** [Stellar Expert](https://testnet.stellarexpert.com/nordic)
-- **Deployed Contract Address:** `CDAHSUXZYB2B7G33I4WYZTYZ6OEZ7XW74T236A7NDHGF6S4MB2F64NUI`
-- **Sample Transaction Hash:** `f3b4695b11a5fe04481067e21a221f725a3d0cb8d488e0af32cd51a61ea72058` _(Track on Stellar Expert)_
+## Tech Stack
 
-## Features (Level 2 Upgrades)
+- **Framework:** Next.js 14 App Router
+- **State Management & Caching:** Zustand (Wallet Store) + SWR (React Hooks for Remote Data Fetching)
+- **Styling:** Tailwind CSS + custom glassmorphism, Lucide Icons, shadcn UI patterns.
+- **Blockchain Connectivity:** `@stellar/stellar-sdk`, `@creit.tech/stellar-wallets-kit`
+- **Testing:** `Vitest` & `React Testing Library`
 
-- **Multi-Wallet Integration:** Supports multiple wallets including Freighter and Albedo via `@creit.tech/stellar-wallets-kit`.
-- **Smart Contract Integration:** Rust-based Soroban smart contract deployed on Stellar Testnet tracking a live counter.
-- **Contract Interactions:** Read and Write contract state (e.g., Increment Counter) directly from the frontend.
-- **Transaction Lifecycle Tracking:** Comprehensive real-time status updates (Pending, Signing, Simulating, Success, Failed).
-- **Real-Time Data Sync:** Polling mechanisms implemented for instant UI updates reflecting blockchain state.
+---
 
-## Folder Structure
+## Smart Contract Details
+**Network:** TESTNET  
+**RPC Server:** `https://soroban-testnet.stellar.org`  
+**Explorer Reference:** `https://testnet.stellarexpert.com/nordic`
 
-```text
-├── contracts/               # Stellar Soroban Smart Contracts
-│   └── counter/             # Rust-based counter contract
-│       ├── src/lib.rs       # Contract logic
-│       └── Cargo.toml       # Rust dependencies
-├── src/
-│   ├── app/                 # Next.js App Router (Pages, Layout, Globals)
-│   ├── components/          # Reusable React Components
-│   │   ├── app/             # App-specific blocks (Wallet Modal, Contract Panel, etc.)
-│   │   └── ui/              # shadcn/ui base components
-│   ├── hooks/               # Custom React Hooks (State, Polling)
-│   ├── lib/                 # Core Utilities
-│   │   ├── contract/        # Smart contract client & RPC logic
-│   │   ├── wallet/          # StellarWalletsKit initialization and hooks
-│   │   └── stellar.ts       # Stellar SDK Server setup
-│   └── types/               # TypeScript Definitions
-├── public/                  # Static assets and screenshots
-└── tailwind.config.ts       # Tailwind CSS Configuration
-```
+---
 
-## How It Works
+## Local Setup & Development
 
-1. **Wallet Connection:** Users connect using Freighter or Albedo. The app requests permissions and retrieves the public key via `@creit.tech/stellar-wallets-kit`.
-2. **Account Hydration:** Fetches testnet XLM balance using the Stellar Horizon server.
-3. **Smart Contract Interactivity:**
-   - **Read:** Fetches the current counter value using Soroban RPC (`get` function).
-   - **Write:** Prepares, simulates, and submits a transaction to `increment` the counter, then updates the status asynchronously.
+### 1. Prerequisites
+- Node.js (v18 or higher recommended)
+- A Stellar Wallet Extension like [Freighter](https://www.freighter.app/)
 
-## Setup Instructions
-
-### Prerequisites
-
-- Node.js (v18+)
-- Supported Wallet Browser Extensions (Freighter or Albedo).
-- [Soroban CLI](https://soroban.stellar.org/docs/setup/environment) (Only if you intend to recompile/deploy the contract).
-
-### 1. Clone & Install
-
+### 2. Installation
 ```bash
-git clone https://github.com/riteshrajpurohit/Stellar-Payment-dApp_L2.git
-cd Stellar-Payment-dApp_L2
+git clone <your-repo-link>
+cd stellar-payment-dapp-l3
 npm install
 ```
 
-### 2. Environment Variables
-
-Create a `.env.local` file in the root directory:
-
+### 3. Environment Setup
+Create a `.env.local` file in the root folder (or use constants if configured inline):
 ```env
 NEXT_PUBLIC_STELLAR_NETWORK=TESTNET
-NEXT_PUBLIC_CONTRACT_ID=CDAHSUXZYB2B7G33I4WYZTYZ6OEZ7XW74T236A7NDHGF6S4MB2F64NUI
+NEXT_PUBLIC_COUNTER_CONTRACT_ID=CDAHSUXZYB2B7G33I4WYZTYZ6OEZ7XW74T236A7NDHGF6S4MB2F64NUI
 ```
 
-### 3. Run Development Server
-
+### 4. Running the App
 ```bash
 npm run dev
 ```
+Open [http://localhost:3000](http://localhost:3000)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to explore the dApp.
+---
 
-### 4. Need Testnet Tokens?
+## Testing
 
-Fund your testnet wallet by visiting the [Stellar Laboratory Friendbot](https://laboratory.stellar.org/#txbuilder?network=test).
+This product ships with comprehensive unit and component tests ensuring form validations and core blockchain helper utilities map correctly.
 
-## Screenshots
+**Run tests suite:**
+```bash
+npm run test
+```
+**Run in watch mode:**
+```bash
+npm run test:watch
+```
 
-### 1. Wallet Options Available
+---
 
-_(Placeholder for Wallet Modal screenshot showing Freighter and Albedo)_
-![Wallet Options](public/wallet-options.png)
+## Demo Video Script Outline
 
-### 2. Wallet Connected & Balance
+*Preparing a demo structure? Follow this flow for a solid 1-minute video:*
+1. **Intro [0:00-0:05]:** Show the landing page, hover over the glass cards. Emphasize the sleek layout. 
+2. **Connect Wallet [0:05-0:15]:** Click "Connect Wallet", select Freighter. Show how the UI instantly unlocks, skeletons pulse, and "Syncing..." badges slide in, followed by the XLM balance rendering.
+3. **Contract Interaction [0:15-0:30]:** Show the "Soroban Contract" panel. Click "Increment". Approve in Freighter. Watch the Spinner state. Once complete, show the success Toast and the auto-refreshing counter value.
+4. **Peer Transfer [0:30-0:45]:** Scroll to the Transaction Form. Emphasize validation (add a bad string to show error, then fix it). Send 1 XLM. Show the "Pending" timeline progress onto the successful receipt.
+5. **Testing & Outro [0:45-1:00]:** Quick cut to terminal running `npm run test` showcasing all green tests. Conclude demo.
 
-_(Placeholder for connected dashboard)_
-![Wallet Connected](public/wallet-connected.png)
+---
 
-### 3. Smart Contract Interaction
+## Architecture Overview
 
-_(Placeholder for Counter Smart Contract Panel)_
-![Contract Panel](public/contract-interaction.png)
-
-### 4. Successful Transaction
-
-_(Placeholder for Success Toast/Status with Hash)_
-![Transaction Result](public/transaction-result.png)
+- **`src/app/`**: Core Next.js routing and global CSS themes defining the dark/aurora look.
+- **`src/components/app/`**: Complex business UI elements (WalletPanel, ContractPanel).
+- **`src/components/ui/`**: Reusable generic blocks (Spinner, Skeletons).
+- **`src/lib/cache/`**: Modular SWR configurations managing read-heavy blockchain data layers.
+- **`src/lib/validation/`**: Pure functions preventing bad transaction requests.
+- **`tests/`**: Vitest/JSDom configured tests for utilities and discrete components.

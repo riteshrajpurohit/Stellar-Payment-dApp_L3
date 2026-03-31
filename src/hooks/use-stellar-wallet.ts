@@ -1,8 +1,7 @@
 "use client";
 
-import { useCallback, useState, useEffect } from "react";
+import { useCallback, useState } from "react";
 import { useWalletStore } from "@/lib/wallet/useWallet";
-import { STELLAR_NETWORK_PASSPHRASE } from "@/lib/constants";
 import { notifyError, notifyInfo, notifySuccess } from "@/lib/toast";
 import type {
   ActivityItem,
@@ -10,15 +9,15 @@ import type {
   TxStatus,
   WalletConnectionState,
 } from "@/types/stellar";
-import { validateTransactionInput } from "@/utils/validation";
+import { validateTransactionInput } from "@/lib/validation/tx-validation";
+import { useCachedBalance } from "@/lib/cache/use-cached-balance";
+import { loadStellarHelpers } from "@/lib/stellar";
 
 interface SendPaymentInput {
   recipient: string;
   amount: string;
   memo?: string;
 }
-
-const loadStellarHelpers = () => import("@/lib/stellar");
 
 export const useStellarWallet = () => {
   const {
@@ -30,9 +29,8 @@ export const useStellarWallet = () => {
     init,
   } = useWalletStore();
 
-  const [balance, setBalance] = useState<string | null>(null);
-  const [isBalanceLoading, setIsBalanceLoading] = useState(false);
-  const [balanceError, setBalanceError] = useState<string | null>(null);
+  const { balance, isBalanceLoading, balanceError, refreshBalance } = useCachedBalance(address || null);
+
   const [txStatus, setTxStatus] = useState<TxStatus>("idle");
   const [txError, setTxError] = useState<string | null>(null);
   const [lastTx, setLastTx] = useState<TransactionResult | null>(null);
@@ -41,39 +39,6 @@ export const useStellarWallet = () => {
   const addActivity = useCallback((item: ActivityItem) => {
     setActivity((prev) => [item, ...prev].slice(0, 5));
   }, []);
-
-  const refreshBalance = useCallback(
-    async (targetAddress?: string) => {
-      const addr = targetAddress || address;
-      if (!addr) {
-        setBalance(null);
-        return;
-      }
-
-      setIsBalanceLoading(true);
-      setBalanceError(null);
-
-      try {
-        const { fetchXlmBalance } = await loadStellarHelpers();
-        const freshBalance = await fetchXlmBalance(addr);
-        setBalance(freshBalance);
-      } catch (error) {
-        const msg =
-          error instanceof Error
-            ? error.message
-            : "Failed to fetch wallet balance.";
-        setBalanceError(msg);
-        notifyError("Balance lookup failed", msg);
-      } finally {
-        setIsBalanceLoading(false);
-      }
-    },
-    [address],
-  );
-
-  useEffect(() => {
-    if (isConnected && address) refreshBalance(address);
-  }, [isConnected, address, refreshBalance]);
 
   const sendPayment = useCallback(
     async ({ recipient, amount, memo }: SendPaymentInput) => {
@@ -95,34 +60,24 @@ export const useStellarWallet = () => {
         return;
       }
 
-      const { StrKey } = await import("@stellar/stellar-sdk");
-      if (!StrKey.isValidEd25519PublicKey(recipient.trim())) {
-        const message = "Recipient address is not a valid Stellar public key.";
-        setTxError(message);
-        notifyError("Invalid address", message);
-        return;
-      }
-
       setTxStatus("pending");
       setTxError(null);
       setLastTx(null);
 
       try {
-        const { buildAndSubmitPayment, hasEnoughSpendableBalance } =
-          await loadStellarHelpers();
+        const { buildAndSubmitPayment, hasEnoughSpendableBalance } = await loadStellarHelpers();
 
-        // Check balance first
         if (balance) {
           if (!hasEnoughSpendableBalance(balance, amount)) {
             throw new Error(
-              `Insufficient funds. Your spendable balance is less than ${amount} XLM.`,
+              `Insufficient funds. Your spendable balance is less than ${amount} XLM.`
             );
           }
         }
 
         notifyInfo(
           "Payment Started",
-          "Please review and sign the transaction in your wallet.",
+          "Please review and sign the transaction in your wallet."
         );
 
         const result = await buildAndSubmitPayment({
@@ -143,7 +98,7 @@ export const useStellarWallet = () => {
         setTxStatus("success");
         notifySuccess(
           "Payment Successful",
-          `Sent ${amount} XLM to ${recipient.slice(0, 4)}...${recipient.slice(-4)}`,
+          `Sent ${amount} XLM to ${recipient.slice(0, 4)}...${recipient.slice(-4)}`
         );
 
         addActivity({
@@ -155,7 +110,7 @@ export const useStellarWallet = () => {
           hash: result.hash,
         });
 
-        refreshBalance(address);
+        refreshBalance();
       } catch (error) {
         const errorMsg =
           error instanceof Error
@@ -174,14 +129,14 @@ export const useStellarWallet = () => {
         });
       }
     },
-    [address, balance, refreshBalance, signTransaction, addActivity],
+    [address, balance, signTransaction, addActivity, refreshBalance]
   );
 
   const connectionState: WalletConnectionState = isConnected
     ? "connected"
     : isConnecting
-      ? "connecting"
-      : "disconnected";
+    ? "connecting"
+    : "disconnected";
 
   return {
     connectionState,

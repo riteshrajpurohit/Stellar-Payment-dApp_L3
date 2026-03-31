@@ -1,7 +1,4 @@
-import Link from "next/link";
-import { CheckCircle2, ExternalLink, XCircle } from "lucide-react";
-
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CheckCircle2, XCircle, Clock, ExternalLink } from "lucide-react";
 import type { TransactionResult, TxStatus } from "@/types/stellar";
 
 interface TxResultCardProps {
@@ -10,67 +7,60 @@ interface TxResultCardProps {
   result: TransactionResult | null;
 }
 
-export const TxResultCard = ({ status, error, result }: TxResultCardProps) => {
+export function TxResultCard({ status, error, result }: TxResultCardProps) {
   if (status === "idle") return null;
 
-  if (status === "error") {
-    return (
-      <Card className="border-red-400/20 bg-red-500/10 backdrop-blur-xl">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-red-100">
-            <XCircle className="size-5" />
-            Transaction Failed
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-red-100/90">
-            {error ?? "Unknown transaction error."}
-          </p>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  if (status === "pending") {
-    return (
-      <Card className="border-amber-400/20 bg-amber-500/10 backdrop-blur-xl">
-        <CardHeader>
-          <CardTitle className="text-amber-100">
-            Transaction in progress
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-amber-100/90">
-            Freighter approval and network confirmation are in progress.
-          </p>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  if (!result) return null;
-
   return (
-    <Card className="border-emerald-400/20 bg-emerald-500/10 backdrop-blur-xl">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-emerald-100">
-          <CheckCircle2 className="size-5" />
-          Payment Successful
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-2 text-sm text-emerald-100/90">
-        <p>Amount: {result.amount} XLM</p>
-        <p className="break-all">Transaction hash: {result.hash}</p>
-        <Link
-          href={result.explorerUrl}
-          target="_blank"
-          rel="noreferrer"
-          className="inline-flex items-center font-medium text-emerald-100 underline decoration-emerald-200/40 underline-offset-4 hover:text-white"
-        >
-          View on Stellar Explorer
-          <ExternalLink className="ml-1 size-4" />
-        </Link>
-      </CardContent>
-    </Card>
+    <div className={`glass-card p-6 border ${
+      status === "success" ? "border-emerald-500/30 bg-emerald-500/5" :
+      status === "error" ? "border-red-500/30 bg-red-500/5" :
+      "border-blue-500/30 bg-blue-500/5"
+    }`}>
+      
+      <div className="flex items-start gap-4">
+        <div className="mt-1">
+          {status === "pending" && <Clock className="animate-spin text-blue-400" size={24} />}
+          {status === "success" && <CheckCircle2 className="text-emerald-400" size={24} />}
+          {status === "error" && <XCircle className="text-red-400" size={24} />}
+        </div>
+        
+        <div className="flex-1 space-y-2">
+          <h3 className="text-base font-medium text-white">
+            {status === "pending" && "Transaction Pending..."}
+            {status === "success" && "Transaction Successful"}
+            {status === "error" && "Transaction Failed"}
+          </h3>
+          
+          <p className="text-sm text-slate-400">
+            {status === "pending" && "Please wait while the transaction is being submitted to the network."}
+            {status === "success" && "Your payment has been successfully added to the ledger."}
+            {status === "error" && (error || "An unknown error occurred.")}
+          </p>
+
+          {result && status === "success" && (
+            <div className="mt-4 rounded-lg bg-black/40 p-4 border border-white/5 space-y-3">
+              <div className="flex justify-between items-center text-xs">
+                 <span className="text-slate-500">Amount</span>
+                 <span className="font-medium text-emerald-400">+{result.amount || "0"} XLM</span>
+              </div>
+              <div className="flex justify-between items-center text-xs break-all gap-4">
+                 <span className="text-slate-500 whitespace-nowrap">Hash</span>
+                 <span className="font-mono text-slate-300 ml-auto text-right">{result.hash}</span>
+              </div>
+              {result.explorerUrl && (
+                <a
+                  href={result.explorerUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-white/5 py-2 mt-2 text-xs font-medium text-white hover:bg-white/10 transition-colors"
+                >
+                  View on Explorer <ExternalLink size={14} />
+                </a>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
   );
-};
+}
