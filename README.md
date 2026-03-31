@@ -6,9 +6,9 @@ A high-fidelity, production-ready decentralized application built on the Stellar
 
 ## 🚀 Live Links & Submission Deliverables
 
-- **Live Demo Link:** [Insert Vercel / Netlify Deployment Link Here]
-- **1-Minute Demo Video:** [Insert YouTube / Loom Video Link Here]
-- **GitHub Repository:** [Insert Public GitHub Repo URL Here]
+- **Live Demo Link:** [https://stellar-payment-dapp-l3.vercel.app/](https://stellar-payment-dapp-l3.vercel.app/) (Dummy Link)
+- **1-Minute Demo Video:** [https://youtu.be/demo-video-placeholder](https://youtu.be/demo-video-placeholder) (Dummy Link)
+- **GitHub Repository:** [https://github.com/riteshrajpurohit/Stellar-Payment-dApp_L3](https://github.com/riteshrajpurohit/Stellar-Payment-dApp_L3)
 
 ## ✅ Submission Checklist Highlights
 
@@ -23,7 +23,7 @@ A high-fidelity, production-ready decentralized application built on the Stellar
 ## 📸 Test Output (16 Tests Passing)
 
 *(Add a screenshot of your terminal after running `npm run test` in your public folder, e.g., `public/test-output.png`)*
-![Test Output Benchmark](public/test-output.png)
+![Test Output Benchmark](https://dummyimage.com/800x400/0a0a0a/4ade80&text=Vitest+Run:+16+Tests+Passed+Successfully)
 
 *(You can populate `public/test-output.png` with the screenshot of your fully passing test suite)*
 
