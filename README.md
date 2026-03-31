@@ -26,6 +26,24 @@ A high-fidelity, production-ready decentralized application built on the Stellar
 
 ---
 
+## 🖼️ Project Gallery / Screenshots
+
+*(Drop your application screenshots here. You can drag and drop them directly into the GitHub editor to generate the links!)*
+
+**1. Dashboard Landing (Unconnected)**
+![Dashboard Landing](#)
+
+**2. Wallet Connected & Live Sync**
+![Wallet Connected State](#)
+
+**3. Smart Contract Interaction**
+![Contract Interaction Loading](#)
+
+**4. Send Transaction (Pending & Verified)**
+![Transaction Feedback](#)
+
+---
+
 ## 🏗️ Project Architecture & File Structure
 
 This repository follows a clean, highly modular React architecture optimized for separation of concerns between UI layers, Blockchain logic, and State caching.
