@@ -1,6 +1,7 @@
 "use client";
 
 import { Wallet, Zap } from "lucide-react";
+import { WalletButton } from "./wallet-button";
 
 interface AppHeaderProps {
   isConnected: boolean;
@@ -30,7 +31,7 @@ export function AppHeader({
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
+          <div className="hidden sm:flex items-center gap-2">
             <div
               className={`size-2 rounded-full ${
                 isConnected
@@ -38,10 +39,11 @@ export function AppHeader({
                   : "bg-slate-600"
               }`}
             />
-            <span className="text-sm font-medium text-slate-300">
+            <span className="text-sm font-medium text-slate-300 mr-2">
               {isConnected ? "Network Live" : "Disconnected"}
             </span>
           </div>
+          <WalletButton />
         </div>
       </div>
     </header>

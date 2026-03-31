@@ -6,7 +6,7 @@ A high-fidelity, production-ready decentralized application built on the Stellar
 
 ## 🚀 Live Links & Submission Deliverables
 
-- **Live Demo Link:** [https://stellar-payment-dapp-l3.vercel.app/](https://stellar-payment-dapp-l3.vercel.app/) (Dummy Link)
+- **Live Demo Link:** https://stellar-payment-d-app-l3.vercel.app/
 - **1-Minute Demo Video:** [https://youtu.be/demo-video-placeholder](https://youtu.be/demo-video-placeholder) (Dummy Link)
 - **GitHub Repository:** [https://github.com/riteshrajpurohit/Stellar-Payment-dApp_L3](https://github.com/riteshrajpurohit/Stellar-Payment-dApp_L3)
 
@@ -22,10 +22,8 @@ A high-fidelity, production-ready decentralized application built on the Stellar
 
 ## 📸 Test Output (16 Tests Passing)
 
-*(Add a screenshot of your terminal after running `npm run test` in your public folder, e.g., `public/test-output.png`)*
-![Test Output Benchmark](https://dummyimage.com/800x400/0a0a0a/4ade80&text=Vitest+Run:+16+Tests+Passed+Successfully)
+<img width="1470" height="956" alt="Screenshot 2026-04-01 at 12 08 29 AM" src="https://github.com/user-attachments/assets/86fd7412-3858-4e08-848b-22b802d666be" />
 
-*(You can populate `public/test-output.png` with the screenshot of your fully passing test suite)*
 
 ---
 
@@ -97,13 +95,3 @@ npm run test:watch
 ```
 
 ---
-
-## 📹 Demo Video Script Outline (For Final Recording)
-
-*Use this flow constraint to shoot a high-quality 60 seconds showcase:*
-
-1. **Intro [0:00-0:05]:** Display the landing page showing the sleek layout. Call out the "Level 3 Command Center".
-2. **Connect Wallet [0:05-0:15]:** Click "Connect Wallet" -> Select Freighter. Show the Skeleton loaders pulsing, changing to data, and "Syncing/Live" caching badges resolving the XLM balance dynamically.
-3. **Contract Interaction [0:15-0:30]:** Scroll to the Soroban Contract module. Hit "Increment". Approve the transaction payload inside the Freighter pop-up. Show the Spinner animation running until the fresh counter yields successfully with a green toast.
-4. **Peer Transfer [0:30-0:45]:** Navigate to "Send Payment". Intentionally input an invalid address/amount to trigger the pure validation errors. Fix it, fire 1 XLM, display the pending state converting into the verified cryptographic hash and Explorer URL payload.
-5. **Testing Finalé [0:45-1:00]:** Switch directly into your terminal environment running `npm run test` to verify all 16 Vitest benchmarks turning green instantaneously. Conclude.

@@ -2,6 +2,7 @@ import { Wallet2, RefreshCw, Power } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Spinner } from "@/components/ui/spinner";
 import { CachedStateBadge } from "./cached-state-badge";
+import { WalletButton } from "./wallet-button";
 
 interface WalletPanelProps {
   isConnected: boolean;
@@ -32,11 +33,14 @@ export function WalletPanel({
       </div>
 
       {!isConnected ? (
-        <div className="rounded-xl border border-white/5 bg-white/5 p-8 text-center">
+        <div className="rounded-xl border border-white/5 bg-white/5 p-8 text-center space-y-6">
           <p className="text-sm text-slate-400">
             Connect your Freighter or Albedo wallet to view your balance and interact
             with the network.
           </p>
+          <div className="flex justify-center">
+             <WalletButton />
+          </div>
         </div>
       ) : (
         <div className="space-y-6">
