@@ -13,7 +13,7 @@ export const getKit = () => {
     // Return a dummy object or null during SSR
     return null;
   }
-  
+
   if (!_kit) {
     _kit = new StellarWalletsKit({
       network: WalletNetwork.TESTNET,
@@ -30,5 +30,5 @@ export const kit = new Proxy({} as StellarWalletsKit, {
     const activeKit = getKit();
     if (!activeKit) return undefined;
     return Reflect.get(activeKit, prop);
-  }
+  },
 });
