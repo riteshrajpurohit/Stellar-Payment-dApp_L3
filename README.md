@@ -28,19 +28,23 @@ A high-fidelity, production-ready decentralized application built on the Stellar
 
 ## 🖼️ Project Gallery / Screenshots
 
-*(Drop your application screenshots here. You can drag and drop them directly into the GitHub editor to generate the links!)*
-
 **1. Dashboard Landing (Unconnected)**
-![Dashboard Landing](#)
+
+<img width="1470" height="956" alt="Screenshot 2026-04-01 at 1 05 19 AM" src="https://github.com/user-attachments/assets/a099447d-9701-4aab-8c8a-cc628a11b3ec" />
+
 
 **2. Wallet Connected & Live Sync**
-![Wallet Connected State](#)
+
+<img width="1470" height="956" alt="Screenshot 2026-04-01 at 1 05 33 AM" src="https://github.com/user-attachments/assets/c90fe6dd-1ef4-40ca-9d8e-8ce80ea6c56f" />
 
 **3. Smart Contract Interaction**
 ![Contract Interaction Loading](#)
 
 **4. Send Transaction (Pending & Verified)**
-![Transaction Feedback](#)
+
+<img width="1470" height="956" alt="Screenshot 2026-04-01 at 1 07 08 AM" src="https://github.com/user-attachments/assets/33a17d50-bd2a-4e0d-aa8d-0950f298d6a2" />
+
+<img width="1470" height="956" alt="Screenshot 2026-04-01 at 1 08 19 AM" src="https://github.com/user-attachments/assets/7c5e0bfa-f67f-49f3-bb65-1e1b5de50f9b" />
 
 ---
 
