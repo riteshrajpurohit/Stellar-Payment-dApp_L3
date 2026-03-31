@@ -1,11 +1,7 @@
 "use client";
 
-import {
-  ArrowDownToLine,
-  ExternalLink,
-  ShieldCheck,
-  Wallet,
-} from "lucide-react";
+import { useState, useEffect } from "react";
+import { ArrowDownToLine, ShieldCheck, ExternalLink } from "lucide-react";
 
 import { ActivityCard } from "@/components/app/activity-card";
 import { AppHeader } from "@/components/app/app-header";
@@ -13,40 +9,29 @@ import { FaucetHint } from "@/components/app/faucet-hint";
 import { TransactionForm } from "@/components/app/transaction-form";
 import { TxResultCard } from "@/components/app/tx-result-card";
 import { WalletPanel } from "@/components/app/wallet-panel";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { ContractPanel } from "@/components/app/contract-panel";
+import { useWalletStore } from "@/lib/wallet/useWallet";
 import { useStellarWallet } from "@/hooks/use-stellar-wallet";
-import { shortenAddress } from "@/utils/format";
 
 export default function Home() {
   const {
-    connectionState,
-    walletAddress,
+    address: walletAddress,
     isConnected,
-    isFreighterInstalled,
-    balance,
-    isBalanceLoading,
-    balanceError,
-    txStatus,
-    txError,
-    lastTx,
-    activity,
-    connectWallet,
-    disconnectWallet,
-    refreshBalance,
-    sendPayment,
-  } = useStellarWallet();
+    isConnecting,
+    disconnect,
+  } = useWalletStore();
 
-  const isConnecting = connectionState === "connecting";
+  // Use legacy hook just for transaction building if they want it
+  const legacyWallet = useStellarWallet();
 
   return (
     <div className="min-h-screen">
       <AppHeader
         isConnected={isConnected}
-        walletAddress={walletAddress}
+        walletAddress={walletAddress || ""}
         isConnecting={isConnecting}
-        onConnect={connectWallet}
-        onDisconnect={disconnectWallet}
+        onConnect={() => {}}
+        onDisconnect={disconnect}
       />
 
       <main className="mx-auto w-full max-w-6xl space-y-8 px-4 py-10 md:px-8 md:py-14">
@@ -61,92 +46,51 @@ export default function Home() {
             </div>
 
             <h1 className="text-3xl font-semibold leading-tight text-white md:text-5xl">
-              Stellar Testnet Payment Console
+              Stellar Web3 Level 2 dApp
             </h1>
 
             <p className="max-w-2xl text-sm leading-relaxed text-slate-300 md:text-base">
-              Connect Freighter, inspect your current Testnet XLM balance, and
-              submit a real payment transaction with production-grade feedback,
-              validation, and explorer traceability.
+              A production-ready environment featuring Multi-Wallet support
+              (Freighter & Albedo), Soroban Smart Contracts, real-time events,
+              and robust transaction tracking.
             </p>
-
-            <div className="flex flex-wrap items-center gap-3">
-              <Button
-                onClick={connectWallet}
-                disabled={isConnected || isConnecting}
-                className="bg-cyan-300 text-slate-950 hover:bg-cyan-200 disabled:bg-cyan-300/60"
-              >
-                <Wallet className="mr-2 size-4" />
-                {isConnected ? "Wallet Connected" : "Connect Freighter"}
-              </Button>
-
-              <Button
-                asChild
-                variant="outline"
-                className="border-white/20 bg-white/5 text-white hover:bg-white/10"
-              >
-                <a href="#send">
-                  <ArrowDownToLine className="mr-2 size-4" />
-                  Go to Send Transaction
-                </a>
-              </Button>
-            </div>
-
-            {!isFreighterInstalled ? (
-              <Card className="border-amber-400/25 bg-amber-500/10">
-                <CardContent className="flex flex-col gap-2 p-4 text-sm text-amber-100 md:flex-row md:items-center md:justify-between">
-                  <p>
-                    Freighter wallet was not detected in this browser. Install
-                    it to continue.
-                  </p>
-                  <a
-                    href="https://www.freighter.app"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center font-medium text-amber-50 underline decoration-amber-200/40 underline-offset-4"
-                  >
-                    Install Freighter
-                    <ExternalLink className="ml-1 size-4" />
-                  </a>
-                </CardContent>
-              </Card>
-            ) : null}
-
-            {isConnected ? (
-              <p className="text-sm text-slate-300">
-                Connected wallet:{" "}
-                <span className="font-mono text-white">
-                  {shortenAddress(walletAddress, 12, 10)}
-                </span>
-              </p>
-            ) : null}
           </div>
         </section>
 
         <section className="grid gap-6 lg:grid-cols-2">
+          {/* Smart Contract Panel */}
+          <ContractPanel />
+
           <WalletPanel
             isConnected={isConnected}
-            address={walletAddress}
-            balance={balance}
-            isBalanceLoading={isBalanceLoading}
-            balanceError={balanceError}
-            onRefreshBalance={() => void refreshBalance()}
-            onDisconnect={disconnectWallet}
+            address={walletAddress || ""}
+            balance={legacyWallet.balance}
+            isBalanceLoading={legacyWallet.isBalanceLoading}
+            balanceError={legacyWallet.balanceError}
+            onRefreshBalance={() =>
+              walletAddress && legacyWallet.refreshBalance(walletAddress)
+            }
+            onDisconnect={disconnect}
           />
+        </section>
 
+        <section className="grid gap-6 lg:grid-cols-2">
           <div className="space-y-6">
             <TransactionForm
               disabled={!isConnected}
-              isSubmitting={txStatus === "pending"}
-              onSubmit={sendPayment}
+              isSubmitting={legacyWallet.txStatus === "pending"}
+              onSubmit={legacyWallet.sendPayment}
             />
-            <TxResultCard status={txStatus} error={txError} result={lastTx} />
+            <TxResultCard
+              status={legacyWallet.txStatus}
+              error={legacyWallet.txError}
+              result={legacyWallet.lastTx}
+            />
           </div>
-        </section>
-
-        <section className="grid gap-6 lg:grid-cols-2">
-          <FaucetHint />
-          <ActivityCard items={activity} />
+          <div className="space-y-6">
+            <ActivityCard items={legacyWallet.activity} />
+            <FaucetHint />
+          </div>
         </section>
       </main>
     </div>

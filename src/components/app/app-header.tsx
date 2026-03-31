@@ -30,7 +30,7 @@ export const AppHeader = ({
               Stellar Pay Console
             </p>
             <p className="text-xs text-slate-400">
-              White Belt Level 1 Mini dApp
+              Level 2 Mini dApp
             </p>
           </div>
         </div>
@@ -42,12 +42,7 @@ export const AppHeader = ({
               {shortenAddress(walletAddress)}
             </Badge>
           ) : null}
-          <WalletButton
-            isConnected={isConnected}
-            isLoading={isConnecting}
-            onConnect={onConnect}
-            onDisconnect={onDisconnect}
-          />
+          <WalletButton />
         </div>
       </div>
     </header>
