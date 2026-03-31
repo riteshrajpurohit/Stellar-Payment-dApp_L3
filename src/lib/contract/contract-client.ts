@@ -69,7 +69,7 @@ export const incrementCounter = async (
   const signedXdr = await signTransaction(tx.toXDR());
 
   // Submit
-  const sendResp = await server.submitTransaction(
+  const sendResp = await server.sendTransaction(
     TransactionBuilder.fromXDR(signedXdr, STELLAR_NETWORK_PASSPHRASE) as any,
   );
   if (sendResp.status === "ERROR") {

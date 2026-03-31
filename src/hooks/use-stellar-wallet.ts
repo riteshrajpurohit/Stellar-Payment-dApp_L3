@@ -125,17 +125,21 @@ export const useStellarWallet = () => {
           "Please review and sign the transaction in your wallet.",
         );
 
-        const result = await buildAndSubmitPayment(
-          {
-            sourceAddress: address,
-            recipient,
-            amount,
-            memo,
-          },
-          async (xdr: string) => await signTransaction(xdr),
-        );
+        const result = await buildAndSubmitPayment({
+          senderPublicKey: address,
+          recipientPublicKey: recipient,
+          amount,
+          memo,
+          signWithFreighter: async (xdr: string) => await signTransaction(xdr),
+        });
 
-        setLastTx(result);
+        setLastTx({
+          ...result,
+          recipient,
+          amount,
+          memo,
+          createdAt: new Date().toISOString(),
+        });
         setTxStatus("success");
         notifySuccess(
           "Payment Successful",
@@ -144,12 +148,11 @@ export const useStellarWallet = () => {
 
         addActivity({
           id: result.hash,
-          type: "payment",
-          amount,
-          target: recipient,
+          title: "Payment",
+          description: `Sent ${amount} XLM to ${recipient}`,
           status: "success",
           timestamp: Date.now(),
-          txHash: result.hash,
+          hash: result.hash,
         });
 
         refreshBalance(address);
@@ -164,9 +167,8 @@ export const useStellarWallet = () => {
 
         addActivity({
           id: Date.now().toString(),
-          type: "payment",
-          amount,
-          target: recipient,
+          title: "Payment Failed",
+          description: `Attempt to send ${amount} XLM failed`,
           status: "error",
           timestamp: Date.now(),
         });
