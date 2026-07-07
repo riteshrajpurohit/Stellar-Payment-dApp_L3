@@ -106,6 +106,11 @@ Test output:
 
 <img width="1470" height="956" alt="Vitest output showing 16 passing tests" src="https://github.com/user-attachments/assets/86fd7412-3858-4e08-848b-22b802d666be" />
 
+CI/CD Working 
+
+<img width="1470" height="956" alt="Screenshot 2026-07-07 at 6 37 53 PM" src="https://github.com/user-attachments/assets/d1e349b5-8665-4625-8e70-d12eac8cab69" />
+
+
 Dashboard states:
 
 <img width="1470" height="956" alt="Dashboard landing screen" src="https://github.com/user-attachments/assets/a099447d-9701-4aab-8c8a-cc628a11b3ec" />
