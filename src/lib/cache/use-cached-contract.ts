@@ -3,8 +3,8 @@ import { getCounter } from "@/lib/contract/contract-client";
 
 export function useCachedContract(sourceAddress: string | null) {
   const { data, error, isLoading, isValidating, mutate } = useSWR(
-    ["contract", "counter"],
-    () => getCounter(sourceAddress || ""), // Source address can be empty for simple reads if the contract allows, but Soroban API usually needs something. We will pass empty or whatever we have.
+    sourceAddress ? ["contract", "counter", sourceAddress] : null,
+    ([, , address]: [string, string, string]) => getCounter(address),
     {
       refreshInterval: 15000, // auto refresh every 15s
       revalidateOnFocus: true,

@@ -2,21 +2,18 @@
 
 import { Wallet, Zap } from "lucide-react";
 import { WalletButton } from "./wallet-button";
+import { shortenAddress } from "@/utils/format";
 
 interface AppHeaderProps {
   isConnected: boolean;
   walletAddress: string;
   isConnecting: boolean;
-  onConnect: () => void;
-  onDisconnect: () => void;
 }
 
 export function AppHeader({
   isConnected,
   walletAddress,
   isConnecting,
-  onConnect,
-  onDisconnect,
 }: AppHeaderProps) {
   return (
     <header className="fixed top-0 z-50 w-full border-b border-white/5 bg-black/50 backdrop-blur-xl transition-all">
@@ -31,16 +28,22 @@ export function AppHeader({
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="hidden sm:flex items-center gap-2">
+          <div className="hidden sm:flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
             <div
               className={`size-2 rounded-full ${
                 isConnected
                   ? "bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.8)]"
+                  : isConnecting
+                  ? "bg-amber-400 shadow-[0_0_10px_rgba(251,191,36,0.8)]"
                   : "bg-slate-600"
               }`}
             />
             <span className="text-sm font-medium text-slate-300 mr-2">
-              {isConnected ? "Network Live" : "Disconnected"}
+              {isConnected
+                ? shortenAddress(walletAddress)
+                : isConnecting
+                ? "Connecting..."
+                : "Disconnected"}
             </span>
           </div>
           <WalletButton />

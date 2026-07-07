@@ -23,7 +23,7 @@ export default function Home() {
   } = useWalletStore();
 
   const wallet = useStellarWallet();
-  const contract = useCachedContract(walletAddress || "");
+  const contract = useCachedContract(walletAddress || null);
 
   return (
     <div className="min-h-screen pb-20">
@@ -31,8 +31,6 @@ export default function Home() {
         isConnected={isConnected}
         walletAddress={walletAddress || ""}
         isConnecting={isConnecting}
-        onConnect={() => {}}
-        onDisconnect={disconnect}
       />
 
       <main className="mx-auto w-full max-w-7xl space-y-8 px-4 pt-28 md:px-8">
